@@ -1,10 +1,27 @@
-import { USER_POSTS_PAGE, AUTH_PAGE, POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE, AUTH_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage, user } from "../index.js";
 import { likePost, dislikePost } from "../api.js";
 import { formatDate } from "../helpers.js";
 
-export function renderPostsPageComponent({ appEl }) {
+export function renderUserPostsPageComponent({ appEl }) {
+  if (posts.length === 0) {
+    appEl.innerHTML = `
+      <div class="page-container">
+        <div class="header-container"></div>
+        <p style="color: #ffffff; text-align: center; padding: 40px 0;">
+          У пользователя пока нет постов
+        </p>
+      </div>
+    `;
+
+    renderHeaderComponent({
+      element: document.querySelector(".header-container"),
+    });
+
+    return;
+  }
+
   const postsHtml = posts
     .map((post) => {
       const isLiked = post.isLiked;
@@ -56,14 +73,6 @@ export function renderPostsPageComponent({ appEl }) {
     element: document.querySelector(".header-container"),
   });
 
-  for (let userEl of document.querySelectorAll(".post-header")) {
-    userEl.addEventListener("click", () => {
-      goToPage(USER_POSTS_PAGE, {
-        userId: userEl.dataset.userId,
-      });
-    });
-  }
-
   for (let likeButton of document.querySelectorAll(".like-button")) {
     likeButton.addEventListener("click", () => {
       if (!user) {
@@ -85,7 +94,8 @@ export function renderPostsPageComponent({ appEl }) {
           if (index !== -1) {
             posts[index] = updatedPost;
           }
-          goToPage(POSTS_PAGE);
+          const userId = posts[0]?.user?.id;
+          goToPage(USER_POSTS_PAGE, { userId });
         })
         .catch((error) => {
           alert(error.message);
