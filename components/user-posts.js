@@ -25,10 +25,14 @@ export function renderUserPostsPageComponent({ appEl }) {
   const postsHtml = posts
     .map((post) => {
       const isLiked = post.isLiked;
+      const avatarSrc =
+        post.user.imageUrl ||
+        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='20' fill='%237334ea'/><circle cx='20' cy='15' r='7' fill='white'/><ellipse cx='20' cy='35' rx='12' ry='8' fill='white'/></svg>";
+
       return `
         <li class="post">
           <div class="post-header" data-user-id="${post.user.id}">
-            <img src="${post.user.imageUrl}" class="post-header__user-image">
+            <img src="${avatarSrc}" class="post-header__user-image">
             <p class="post-header__user-name">${post.user.name}</p>
           </div>
           <div class="post-image-container">
@@ -94,8 +98,7 @@ export function renderUserPostsPageComponent({ appEl }) {
           if (index !== -1) {
             posts[index] = updatedPost;
           }
-          const userId = posts[0]?.user?.id;
-          goToPage(USER_POSTS_PAGE, { userId });
+          renderUserPostsPageComponent({ appEl });
         })
         .catch((error) => {
           alert(error.message);

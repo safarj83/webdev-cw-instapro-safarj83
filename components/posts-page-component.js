@@ -1,4 +1,4 @@
-import { USER_POSTS_PAGE, AUTH_PAGE, POSTS_PAGE } from "../routes.js";
+import { USER_POSTS_PAGE, AUTH_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage, user } from "../index.js";
 import { likePost, dislikePost } from "../api.js";
@@ -8,10 +8,14 @@ export function renderPostsPageComponent({ appEl }) {
   const postsHtml = posts
     .map((post) => {
       const isLiked = post.isLiked;
+      const avatarSrc =
+        post.user.imageUrl ||
+        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'><circle cx='20' cy='20' r='20' fill='%237334ea'/><circle cx='20' cy='15' r='7' fill='white'/><ellipse cx='20' cy='35' rx='12' ry='8' fill='white'/></svg>";
+
       return `
         <li class="post">
           <div class="post-header" data-user-id="${post.user.id}">
-            <img src="${post.user.imageUrl}" class="post-header__user-image">
+            <img src="${avatarSrc}" class="post-header__user-image">
             <p class="post-header__user-name">${post.user.name}</p>
           </div>
           <div class="post-image-container">
@@ -85,7 +89,7 @@ export function renderPostsPageComponent({ appEl }) {
           if (index !== -1) {
             posts[index] = updatedPost;
           }
-          goToPage(POSTS_PAGE);
+          renderPostsPageComponent({ appEl });
         })
         .catch((error) => {
           alert(error.message);
